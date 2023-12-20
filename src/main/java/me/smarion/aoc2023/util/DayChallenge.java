@@ -1,6 +1,7 @@
 package me.smarion.aoc2023.util;
 
 import java.io.IOException;
+import me.smarion.aoc2023.Day11p2;
 
 public interface DayChallenge {
     String run(String input);

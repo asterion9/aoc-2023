@@ -19,7 +19,7 @@ public class DataFetcher {
 
     public static String fetch(int day) throws IOException, InterruptedException {
         if (cookie == null) {
-            cookie = Files.asCharSource(Paths.get("target", "cookie").toFile(), Charsets.UTF_8).read();
+            cookie = Files.asCharSource(Paths.get("target", "cookie").toFile(), Charsets.UTF_8).read().trim();
         }
 
         String fileName = Hashing.sha256().newHasher().putInt(day).putUnencodedChars(cookie).hash().toString();

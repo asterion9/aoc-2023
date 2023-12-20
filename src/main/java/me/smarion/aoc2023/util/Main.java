@@ -1,6 +1,12 @@
 package me.smarion.aoc2023.util;
 
-import me.smarion.aoc2023.Day09p2;
+import me.smarion.aoc2023.Day13p1;
+import me.smarion.aoc2023.Day13p2;
+import me.smarion.aoc2023.Day14p1;
+import me.smarion.aoc2023.Day14p2;
+import me.smarion.aoc2023.Day15p1;
+import me.smarion.aoc2023.Day17p2;
+import me.smarion.aoc2023.Day18p1;
 
 public class Main {
 
@@ -30,7 +36,27 @@ public class Main {
         //System.out.println("day08 part 2 : \"" + new Day08p2().run() + "\"");
 
         //System.out.println("day09 part 1 : \"" + new Day09p1().run() + "\"");
-        System.out.println("day09 part 2 : \"" + new Day09p2().run() + "\"");
+        //System.out.println("day09 part 2 : \"" + new Day09p2().run() + "\"");
+
+        //System.out.println("day11 part 1 : \"" + new Day11p1().run() + "\"");
+        //System.out.println("day11 part 2 : \"" + new Day11p2().run() + "\"");
+
+        //System.out.println("day12 part 1 : \"" + new Day12p1().run() + "\"");
+        //System.out.println("day12 part 2 : \"" + new Day12p2().run() + "\"");
+
+        //System.out.println("day13 part 1 : \"" + new Day13p1().run() + "\"");
+        //System.out.println("day13 part 2 : \"" + new Day13p2().run() + "\"");
+
+        //System.out.println("day14 part 1 : \"" + new Day14p1().run() + "\"");
+        //System.out.println("day14 part 2 : \"" + new Day14p2().run() + "\"");
+
+        //System.out.println("day15 part 1 : \"" + new Day15p1().run() + "\"");
+        //System.out.println("day15 part 2 : \"" + new Day15p2().run() + "\"");
+
+        //System.out.println("day17 part 2 : \"" + new Day17p2().run() + "\"");
+        //System.out.println("day17 part 2 : \"" + new Day17p2().run() + "\"");
+
+        System.out.println("day18 part 1 : \"" + new Day18p1().run() + "\"");
     }
 
 }
