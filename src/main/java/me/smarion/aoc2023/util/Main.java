@@ -1,6 +1,6 @@
 package me.smarion.aoc2023.util;
 
-import me.smarion.aoc2023.Day18p1;
+import me.smarion.aoc2023.Day18p2;
 
 public class Main {
 
@@ -56,7 +56,8 @@ public class Main {
         //System.out.println("day17 part 1 : \"" + new Day17(3, 0).run() + "\"");
         //System.out.println("day17 part 2 : \"" + new Day17(10, 4).run() + "\"");
 
-        System.out.println("day18 part 1 : \"" + new Day18p1().run() + "\"");
+        //System.out.println("day18 part 1 : \"" + new Day18p1().run() + "\"");
+        System.out.println("day18 part 2 : \"" + new Day18p2().run() + "\"");
     }
 
 }

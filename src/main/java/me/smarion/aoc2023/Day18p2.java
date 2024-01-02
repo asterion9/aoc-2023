@@ -43,22 +43,10 @@ public class Day18p2 implements DayChallenge {
                 nextIntervals.add(new Interval(nextVertex.remove(0).y, nextVertex.remove(0).y));
             }
 
-            currentIntervals.addAll(
-                    nextIntervals.stream()
-                            .map(next -> {
-                                int i = 0;
-                                while (i < currentIntervals.size()) {
-                                    if (currentIntervals.get(i).isAdding(next)) {
-                                        next = currentIntervals.remove(i).join(next);
-                                    } else if (currentIntervals.get(i).isSubstracting(next)) {
-                                        next = currentIntervals.remove(i).disjoin(next);
-                                    } else {
-                                        i++;
-                                    }
-                                }
-                                return next;
-                            }).toList()
-            );
+            long totalRemoved = -nextIntervals.stream()
+                    .mapToLong(next -> mergeInterval(next, currentIntervals))
+                    .filter(i -> i < 0)
+                    .sum();
 
             area += (nextX - currentX) * currentLength;
 
@@ -66,8 +54,8 @@ public class Day18p2 implements DayChallenge {
                     .mapToLong(i -> i.e - i.s + 1)
                     .sum();
 
-            if (nextLength < currentLength) {
-                area += currentLength - nextLength;
+            if (totalRemoved > 0) {
+                area += totalRemoved;
             }
 
             currentLength = nextLength;
@@ -77,25 +65,63 @@ public class Day18p2 implements DayChallenge {
         return area + "";
     }
 
-    private record Interval(long s, long e) {
+    public static long mergeInterval(Interval next, List<Interval> currentIntervals) {
+        int i = 0;
+        long sizeVar;
+        while (i < currentIntervals.size()) {
+            if (currentIntervals.get(i).isAdding(next)) {
+                Interval removed = currentIntervals.remove(i);
+                next = removed.join(next);
+                sizeVar = next.length() - removed.length();
+                if (currentIntervals.size() > i && currentIntervals.get(i).isAdding(next)) {
+                    removed = currentIntervals.remove(i);
+                    next = removed.join(next);
+                    sizeVar = next.length() - removed.length();
+                }
+                currentIntervals.add(i, next);
+                return sizeVar;
+            } else if (currentIntervals.get(i).isSubstracting(next)) {
+                Interval removed = currentIntervals.remove(i);
+                List<Interval> remaining = removed.substract(next);
+                currentIntervals.addAll(i, remaining);
+                return remaining.stream().mapToLong(Interval::length).sum() - removed.length();
+            } else if (currentIntervals.get(i).s() > next.e()) {
+                currentIntervals.add(i, next);
+                return next.length();
+            } else {
+                i++;
+            }
+        }
+        currentIntervals.add(next);
+        return next.length();
+    }
+
+    public record Interval(long s, long e) {
         public boolean isAdding(Interval other) {
-            return other.s == e || other.e == s;
+            return other.s - e == 0 || other.s - e == 1 || s - other.e == 0 || s - other.e == 1;
+        }
+
+        public long length() {
+            return e - s + 1;
         }
 
         public boolean isSubstracting(Interval other) {
-            return e >= other.s && other.e >= s;
+            return other.s >= s && other.e <= e;
         }
 
         public Interval join(Interval other) {
             return new Interval(Math.min(other.s, s), Math.max(other.e, e));
         }
 
-        public Interval disjoin(Interval other) {
-            if (other.s == s) {
-                return new Interval(Math.min(other.e, e), Math.max(other.e, e));
-            } else {
-                return new Interval(Math.min(other.s, s), Math.max(other.s, s));
+        public List<Interval> substract(Interval other) {
+            List<Interval> result = new ArrayList<>();
+            if (s != other.s) {
+                result.add(new Interval(s, other.s));
             }
+            if (e != other.e) {
+                result.add(new Interval(other.e, e));
+            }
+            return result;
         }
     }
 
@@ -109,44 +135,44 @@ public class Day18p2 implements DayChallenge {
         DOWN,
         LEFT;
 
-        public static Direction parsePlan(char c) {
-            return switch (c) {
-                case 'U' -> UP;
-                case 'D' -> DOWN;
-                case 'R' -> RIGHT;
-                case 'L' -> LEFT;
-                default -> throw new IllegalArgumentException(c + " is not a valid direction");
-            };
-        }
-    }
-
-    private record PlanLine(Direction direction, int length) {
-        public static PlanLine parse(String input) {
-            String[] parts = input.split("\\s+");
-            return new PlanLine(
-                    Direction.parsePlan(parts[0].charAt(0)),
-                    Integer.parseInt(parts[1])
-            );
-        }
-    }
-//        public static Direction parsePlan(char c) {
+        //        public static Direction parsePlan(char c) {
 //            return switch (c) {
-//                case '3' -> UP;
-//                case '1' -> DOWN;
-//                case '0' -> RIGHT;
-//                case '2' -> LEFT;
+//                case 'U' -> UP;
+//                case 'D' -> DOWN;
+//                case 'R' -> RIGHT;
+//                case 'L' -> LEFT;
 //                default -> throw new IllegalArgumentException(c + " is not a valid direction");
 //            };
 //        }
 //    }
 //
-//    private record PlanLine(Direction direction, long length) {
+//    private record PlanLine(Direction direction, int length) {
 //        public static PlanLine parse(String input) {
-//            String instruction = input.split("\\s+")[2].substring(2, 8);
+//            String[] parts = input.split("\\s+");
 //            return new PlanLine(
-//                    Direction.parsePlan(instruction.charAt(5)),
-//                    Long.parseLong(instruction.substring(0, 5), 16)
+//                    Direction.parsePlan(parts[0].charAt(0)),
+//                    Integer.parseInt(parts[1])
 //            );
 //        }
 //    }
+        public static Direction parsePlan(char c) {
+            return switch (c) {
+                case '3' -> UP;
+                case '1' -> DOWN;
+                case '0' -> RIGHT;
+                case '2' -> LEFT;
+                default -> throw new IllegalArgumentException(c + " is not a valid direction");
+            };
+        }
+    }
+
+    private record PlanLine(Direction direction, long length) {
+        public static PlanLine parse(String input) {
+            String instruction = input.split("\\s+")[2].substring(2, 8);
+            return new PlanLine(
+                    Direction.parsePlan(instruction.charAt(5)),
+                    Long.parseLong(instruction.substring(0, 5), 16)
+            );
+        }
+    }
 }

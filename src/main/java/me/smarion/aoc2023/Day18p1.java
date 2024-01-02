@@ -3,8 +3,10 @@ package me.smarion.aoc2023;
 import me.smarion.aoc2023.util.DayChallenge;
 import one.util.streamex.StreamEx;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Queue;
 
 public class Day18p1 implements DayChallenge {
     @Override
@@ -73,11 +75,14 @@ public class Day18p1 implements DayChallenge {
 
         int counter = 0;
         for (int x = 0; x < grid.length; x++) {
+            int lineValue = 0;
             for (int y = 0; y < grid[x].length; y++) {
                 if (grid[x][y] == '.' || grid[x][y] == '#') {
-                    counter++;
+                    lineValue++;
                 }
             }
+            System.out.printf("%d: %d%n", x, lineValue);
+            counter += lineValue;
         }
 
         System.out.println(print(grid));
@@ -107,21 +112,27 @@ public class Day18p1 implements DayChallenge {
             this.by = by;
         }
 
-        public void fillAdjacent(int x, int y) {
-            if (x >= 0 && x < grid.length) {
-                if (y >= 0 && y < grid[x].length) {
-                    if (grid[x][y] == replace) {
-                        grid[x][y] = by;
-                        fillAdjacent(x - 1, y);
-                        fillAdjacent(x + 1, y);
-                        fillAdjacent(x, y - 1);
-                        fillAdjacent(x, y + 1);
+        public void fillAdjacent(int xStart, int yStart) {
+            Queue<Position> remainingToCheck = new ArrayDeque<>();
+            remainingToCheck.add(new Position(xStart, yStart));
+            while (!remainingToCheck.isEmpty()) {
+                var toCheck = remainingToCheck.poll();
+                int x = toCheck.x();
+                int y = toCheck.y();
+                if (x >= 0 && x < grid.length) {
+                    if (y >= 0 && y < grid[x].length) {
+                        if (grid[x][y] == replace) {
+                            grid[x][y] = by;
+                            remainingToCheck.add(new Position(x - 1, y));
+                            remainingToCheck.add(new Position(x + 1, y));
+                            remainingToCheck.add(new Position(x, y - 1));
+                            remainingToCheck.add(new Position(x, y + 1));
+                        }
                     }
                 }
             }
         }
     }
-
 
     private record Position(int x, int y) {
     }
